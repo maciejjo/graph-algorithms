@@ -63,3 +63,15 @@ void fill_adjacency_matrix_dfg(int **adjacency_matrix, int matrix_size, float de
 		}
 	}
 }
+
+void adjacency_list_from_matrix(int **adjacency_matrix, int matrix_size) {
+
+	for(int i = 0; i < matrix_size; i++) {
+		for(int j = 0; j< matrix_size; j++) {
+			if(adjacency_matrix[i][j])
+				printf("%d ", j);
+		}
+		printf("\n");
+	}
+}
+

@@ -10,7 +10,7 @@ int main() {
 	
 	printf("Algorytmy grafowe\n\n");
 	
-	int number_of_vertices = 1000;
+	int number_of_vertices = 10;
 	printf("Graf ma %d wierzchołków\n", number_of_vertices);
 
 		
@@ -44,7 +44,8 @@ int main() {
 		stop = clock();
 		printf("Pomiar czasu: %.2f\n", (float) (stop - start)/CLOCKS_PER_SEC);
 	}
-
+	
+	adjacency_list_from_matrix(adjacency_matrix, number_of_vertices);
 	return 0;
 }
 
