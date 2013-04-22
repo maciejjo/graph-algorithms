@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <time.h>
 #include "graph.h"
-
+#include "list.h"
 
 int main() {
 	
 	srand(time(NULL));
 	
-	printf("Algorytmy grafowe\n");
+	printf("Algorytmy grafowe\n\n");
 	
-	int number_of_vertices = 100;
+	int number_of_vertices = 1000;
 	printf("Graf ma %d wierzchołków\n", number_of_vertices);
 
 		
@@ -28,16 +28,21 @@ int main() {
 		printf("Pomiar czasu: %.2f\n", (float) (stop - start)/CLOCKS_PER_SEC);
 		
 		printf("Przeszukiwanie DFS...\n");
-			int *vertex_array = (int *) malloc(sizeof(int) * number_of_vertices);
-			int vertex_count = 0;
-			dfs_count(adjacency_matrix, number_of_vertices, &vertex_count, vertex_array, 0);
-			if(vertex_count == number_of_vertices) {
-				printf("Graf jest spójny\n");
-				connected = 1;
-			}
-			else
-				printf("Graf niespójny, ponawiam generację\n");
+		
+		start = clock();
+		int *vertex_array = (int *) malloc(sizeof(int) * number_of_vertices);
+		int vertex_count = 0;
+		dfs_count(adjacency_matrix, number_of_vertices, &vertex_count, vertex_array, 0);
+		if(vertex_count == number_of_vertices) {
+			printf("Graf jest spójny\n");
+			connected = 1;
+		}
+		else {
+			printf("Graf niespójny, ponawiam generację\n");
 			free(vertex_array);
+		}
+		stop = clock();
+		printf("Pomiar czasu: %.2f\n", (float) (stop - start)/CLOCKS_PER_SEC);
 	}
 
 	return 0;
