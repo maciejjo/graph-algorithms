@@ -19,8 +19,8 @@ int main() {
 		adjacency_matrix[i] = (int *) malloc(number_of_vertices * sizeof(int));
 	}
 
-	int spojny = 0;
-	while(!spojny) {
+	int connected = 0;
+	while(!connected) {
 
 		time_t start = clock();
 		fill_adjacency_matrix_dfg(adjacency_matrix, number_of_vertices, 0.5);
@@ -33,7 +33,7 @@ int main() {
 			dfs_count(adjacency_matrix, number_of_vertices, &vertex_count, vertex_array, 0);
 			if(vertex_count == number_of_vertices) {
 				printf("Graf jest spójny\n");
-				spojny = 1;
+				connected = 1;
 			}
 			else
 				printf("Graf niespójny, ponawiam generację\n");
