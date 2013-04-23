@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "list.h"
 
 void dfs_count(int **adjacency_matrix, int matrix_size, int *vertex_count,  int *vertex_array, int vertex) {
-	
+//	printf("%d ", vertex);
 	//Dodawanie do listy odwiedzonych i zwiększenie licznika odwiedzonych
 	vertex_array[*vertex_count] = vertex;
 	(*vertex_count)++;
@@ -28,6 +29,17 @@ void dfs_count(int **adjacency_matrix, int matrix_size, int *vertex_count,  int 
 	}
 }
 
+void mirror_adjacency_matrix(int **input_matrix, int matrix_size, int **output_matrix) {
+	for(int i = 0; i<matrix_size; i++) {
+		for(int j = 0; j<matrix_size; j++) {
+			if(input_matrix[i][j])
+			{
+				output_matrix[i][j] = 1;
+				output_matrix[j][i] = 1;
+			}
+		}
+	}
+}
 void fill_adjacency_matrix_dfg(int **adjacency_matrix, int matrix_size, float density) {
 
 	// Wyzerowanie macierzy
@@ -39,7 +51,6 @@ void fill_adjacency_matrix_dfg(int **adjacency_matrix, int matrix_size, float de
 	
 	//Obliczenie ilości łuków w zależności od zagęszczenia
 	int number_of_arcs = (int) ((matrix_size*(matrix_size-1)) / 2) * density;
-	printf("Należy wygenerować %d łuków\n", number_of_arcs);
 
 	while(number_of_arcs) {
 		//Losowanie współrzędnych w macierzy
@@ -48,30 +59,44 @@ void fill_adjacency_matrix_dfg(int **adjacency_matrix, int matrix_size, float de
 		//Jeśli są różne (nie są na przekątnej)
 		if(x != y)
 		{	
-			//Jeśli x>y to zamieniamy współrzędne żeby być w górnym trójkącie
 			if(x>y) {
-				int tmp = x;
-				x = y;
-				y = tmp;
+				if(adjacency_matrix[y][x] == 0) {
+					adjacency_matrix[y][x] = 1;
+					number_of_arcs--;
+				}
 			}
-			
-			//Jeśli w danym miejscu nie ma jeszcze jedynki
-			if(adjacency_matrix[x][y] == 0) {
-				adjacency_matrix[x][y] = 1;
-				number_of_arcs--;
+			else {
+				if(adjacency_matrix[x][y] == 0) {
+					adjacency_matrix[x][y] = 1;
+					number_of_arcs--;
+				}
 			}
 		}
 	}
 }
 
-void adjacency_list_from_matrix(int **adjacency_matrix, int matrix_size) {
+void adjacency_list_from_matrix(int **adjacency_matrix, int matrix_size, list **adjacency_list_array) {
 
 	for(int i = 0; i < matrix_size; i++) {
 		for(int j = 0; j< matrix_size; j++) {
-			if(adjacency_matrix[i][j])
-				printf("%d ", j);
+			if(adjacency_matrix[i][j]) {
+				add_to_list(&(adjacency_list_array[i]), j);
+			}
 		}
-		printf("\n");
+//		print_list(adjacency_list_array[i]);
 	}
 }
+
+
+void edge_list_from_adjacency_list(list **adjacency_list_array, float density, int matrix_size, int**edge_list) {
+		
+	for(int i = 0; i < matrix_size; i++) {
+		list *pointer = adjacency_list_array[i];
+		while(pointer != NULL) {
+			printf("%d %d\n", i, pointer->data);
+			pointer = pointer->next;
+		}
+	}
+}
+
 
