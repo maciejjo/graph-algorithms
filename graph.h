@@ -2,7 +2,9 @@
 #define GRAPH_H
 #include "list.h"
 
-void dfs_count(int **adjacency_matrix, int matrix_size, int *vertex_count, int *vertex_array, int vertex);
+void dfs_traversal_matrix(int **adjacency_matrix, int matrix_size, int *vertex_count, int *vertex_array, int vertex);
+void dfs_traversal_list(list **adjacency_list_array, int matrix_size, int *vertex_count,  int *vertex_array, int vertex);
+void dfs_traversal_edge_list(int **edge_list, int edge_count, int *vertex_count,  int *vertex_array, int edge);
 void fill_adjacency_matrix_dfg(int **adjacency_matrix, int matrix_size, float density);
 void mirror_adjacency_matrix(int **input_matrix, int matrix_size, int **output_matrix);
 void adjacency_list_from_matrix(int **adjacency_matrix, int matrix_size, list **adjacency_list_array);
