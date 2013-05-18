@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include "list.h"
 
-void dfs_traversal_matrix(int **adjacency_matrix, int matrix_size, int *vertex_count,  int *vertex_array, int vertex) {
+void dfs_traversal_matrix(int **adjacency_matrix, int matrix_size, int *vertex_count, int *vertex_array, int *dfs_count, int *dfs_array, int vertex) {
+	
 	//Dodawanie do listy odwiedzonych i zwiększenie licznika odwiedzonych
-	printf("%d ", vertex);
 	vertex_array[*vertex_count] = vertex;
 	(*vertex_count)++;
 	
@@ -23,16 +23,20 @@ void dfs_traversal_matrix(int **adjacency_matrix, int matrix_size, int *vertex_c
 			}
 			//Jeśli nie znaleziono na liście odwiedzonych odwiedź wierzchołek
 			if(!found) {
-				dfs_traversal_matrix(adjacency_matrix, matrix_size, vertex_count, vertex_array, i);
+				dfs_traversal_matrix(adjacency_matrix, matrix_size, vertex_count, vertex_array, dfs_count, dfs_array, i);
 			}
 		}
 	}
+
+	//Dodawanie do tablicy DFS
+	dfs_array[*dfs_count] = vertex;
+	(*dfs_count)++;
 }
 
 
-void dfs_traversal_list(list **adjacency_list_array, int matrix_size, int *vertex_count,  int *vertex_array, int vertex) {
+void dfs_traversal_list(list **adjacency_list_array, int matrix_size, int *vertex_count, int *vertex_array, int *dfs_count, int *dfs_array, int vertex) {
+	
 	//Dodawanie do listy odwiedzonych i zwiększenie licznika odwiedzonych
-	printf("%d ", vertex);
 	vertex_array[*vertex_count] = vertex;
 	(*vertex_count)++;
 	
@@ -47,47 +51,37 @@ void dfs_traversal_list(list **adjacency_list_array, int matrix_size, int *verte
 			}
 		}
 		if(!found) {
-			dfs_traversal_list(adjacency_list_array, matrix_size, vertex_count, vertex_array, pointer->data);
+			dfs_traversal_list(adjacency_list_array, matrix_size, vertex_count, vertex_array, dfs_count, dfs_array, pointer->data);
 		}
 		pointer = pointer->next;
 	}
+	dfs_array[*dfs_count] = vertex;
+	(*dfs_count)++;
 }
 
-void dfs_traversal_edge_list(int **edge_list, int edge_count, int *vertex_count,  int *vertex_array, int edge) {
-	//Dodawanie do listy odwiedzonych i zwiększenie licznika odwiedzonych
-//	printf("%d ", edge);
-	printf("Dodaje %d i %d\n", edge_list[edge][0], edge_list[edge][1]);
+void dfs_traversal_edge_list(int **edge_list, int edge_count, int *vertex_count, int *vertex_array, int *dfs_count, int *dfs_array, int vertex) {
 
-	vertex_array[*vertex_count] = edge_list[edge][0];
-	vertex_array[*vertex_count] = edge_list[edge][1];
-	(*vertex_count) += 2;	
-	
-	for(int i = 0; i< edge_count; i++) {
-		int found = 0;
-		for(int j = 0; j < *vertex_count; j++) {
-			//Jeśli znaleziono przerwij pętlę
-			if(edge_list[i][0] == vertex_array[j]) {
-				found = 1;
-				break;
+	vertex_array[*vertex_count] = vertex;
+	(*vertex_count)++;
+
+	for(int i = 0; i < edge_count; i++) {
+		if(edge_list[i][0] == vertex) {
+			int found = 0;
+			for(int j = 0; j < *vertex_count; j++) {
+				if(edge_list[i][1] == vertex_array[j]) {
+					found = 1;
+					break;
+				}
 			}
-		}
-		if(!found) {
-			dfs_traversal_edge_list(edge_list, edge_count, vertex_count, vertex_array, edge_list[i][0]);
-		}
-		found = 0;
-		for(int j = 0; j < *vertex_count; j++) {
-			//Jeśli znaleziono przerwij pętlę
-			if(edge_list[i][1] == vertex_array[j]) {
-				found = 1;
-				break;
+			if(!found) {
+				dfs_traversal_edge_list(edge_list, edge_count, vertex_count, vertex_array, dfs_count, dfs_array, edge_list[i][1]);
 			}
-		}
-		if(!found) {
-			dfs_traversal_edge_list(edge_list, edge_count, vertex_count, vertex_array, edge_list[i][0]);
 		}
 	}
+		
+	dfs_array[*dfs_count] = vertex;
+	(*dfs_count)++;
 }
-
 
 void mirror_adjacency_matrix(int **input_matrix, int matrix_size, int **output_matrix) {
 	for(int i = 0; i<matrix_size; i++) {
@@ -145,22 +139,48 @@ void adjacency_list_from_matrix(int **adjacency_matrix, int matrix_size, list **
 				add_to_list(&(adjacency_list_array[i]), j);
 			}
 		}
-//		print_list(adjacency_list_array[i]);
+		//printf("%d: ",i);
+		//print_list(adjacency_list_array[i]);
 	}
 }
 
+void previous_list(list **adjacency_list_array, int matrix_size, list **previous_list) {
 
-void edge_list_from_adjacency_list(list **adjacency_list_array, float density, int matrix_size, int**edge_list) {
-		
 	for(int i = 0; i < matrix_size; i++) {
 		list *pointer = adjacency_list_array[i];
 		while(pointer != NULL) {
-			edge_list[i][0] = i;
-			edge_list[i][1] = pointer->data;
-//			printf("%d %d\n", i, pointer->data);
+			for(int j = 0; j <matrix_size; j++) {
+
+			if(pointer->data == j) {
+				add_to_list(&(previous_list[pointer->data]), i);
+			}
+			}
+			pointer = pointer->next;
+		}
+	}
+}
+			
+		
+
+void edge_list_from_adjacency_list(list **adjacency_list_array, int matrix_size, int **edge_list) {
+	int j = 0;
+	for(int i = 0; i < matrix_size; i++) {
+		list *pointer = adjacency_list_array[i];
+		while(pointer != NULL) {
+			edge_list[j][0] = i;
+			edge_list[j][1] = pointer->data;
+		//	printf("%d -> %d\n", edge_list[j][0], edge_list[j][1]);
+			j++;
 			pointer = pointer->next;
 		}
 	}
 }
 
-
+void print_matrix(int **adjacency_matrix, int matrix_size) {
+	for(int i = 0; i < matrix_size; i++) {
+		for(int j = 0; j < matrix_size; j++) {
+			printf("%d ", adjacency_matrix[i][j]);
+		}
+		printf("\n");
+	}
+}
